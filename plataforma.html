@@ -1163,13 +1163,14 @@ function renderGastos(){
     allGastos.forEach(g=>{if(g.fecha)meses.add(g.fecha.substring(0,7))});
     const sm=[...meses].sort();
     function mesSum(arr,m){return arr.filter(a=>a.fecha&&a.fecha.startsWith(m)).reduce((s,a)=>s+(parseFloat(a.costo)||0),0)}
-    safeChart('chartGastosCatMes',{plugins:[ChartDataLabels],type:'bar',data:{labels:sm.map(fmtMes),datasets:[
+    safeChart("chartGastosCatMes",{plugins:[ChartDataLabels],type:"bar",data:{labels:sm.map(fmtMes),datasets:[
       {label:'Reparaciones',data:sm.map(m=>mesSum(reparaciones,m)),backgroundColor:'#c62828'},
       {label:'Mantenimiento',data:sm.map(m=>mesSum(costos,m)),backgroundColor:'#1565c0'},
       {label:'Llantas',data:sm.map(m=>mesSum(llantas,m)),backgroundColor:'#2e7d32'},
       {label:'Multas',data:sm.map(m=>mesSum(multas,m)),backgroundColor:'#ff6f00'}
-    ]},options:{responsive:true,plugins:{legend:{position:'top'},datalabels:{color:'#fff',font:{weight:'bold',size:10},formatter:v=>v>0?'
-    safeChart('chartGastosCat',{plugins:[ChartDataLabels],type:'doughnut',data:{labels:['Reparaciones','Mantenimiento','Llantas','Multas'],datasets:[{data:[tRep,tMant,tLlan,tMult],backgroundColor:['#c62828','#1565c0','#2e7d32','#ff6f00'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,plugins:{legend:{position:'right'},datalabels:{color:'#fff',font:{weight:'bold',size:12},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);const p=t>0?((v/t)*100).toFixed(1):0;return v>0?'
+    ]},options:{responsive:true,plugins:{legend:{position:"top"},datalabels:{color:"#fff",font:{weight:"bold",size:10},formatter:function(v){return v>0?"$"+v.toFixed(0):""},anchor:"center",align:"center"}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return "$"+v}}}}}});
+    safeChart("chartGastosCat",{plugins:[ChartDataLabels],type:"doughnut",data:{labels:["Reparaciones","Mantenimiento","Llantas","Multas"],datasets:[{data:[tRep,tMant,tLlan,tMult],backgroundColor:["#c62828","#1565c0","#2e7d32","#ff6f00"],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,plugins:{legend:{position:"right"},datalabels:{color:"#fff",font:{weight:"bold",size:12},formatter:function(v,ctx){var t=ctx.dataset.data.reduce(function(a,b){return a+b},0);var p=t>0?((v/t)*100).toFixed(1):0;return v>0?"$"+v.toFixed(0)+"
+"+p+"%":""}}}}});
   }
 
   // Add gasto modal
