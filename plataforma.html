@@ -1169,8 +1169,7 @@ function renderGastos(){
       {label:'Llantas',data:sm.map(m=>mesSum(llantas,m)),backgroundColor:'#2e7d32'},
       {label:'Multas',data:sm.map(m=>mesSum(multas,m)),backgroundColor:'#ff6f00'}
     ]},options:{responsive:true,plugins:{legend:{position:"top"},datalabels:{color:"#fff",font:{weight:"bold",size:10},formatter:function(v){return v>0?"$"+v.toFixed(0):""},anchor:"center",align:"center"}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return "$"+v}}}}}});
-    safeChart("chartGastosCat",{plugins:[ChartDataLabels],type:"doughnut",data:{labels:["Reparaciones","Mantenimiento","Llantas","Multas"],datasets:[{data:[tRep,tMant,tLlan,tMult],backgroundColor:["#c62828","#1565c0","#2e7d32","#ff6f00"],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,plugins:{legend:{position:"right"},datalabels:{color:"#fff",font:{weight:"bold",size:12},formatter:function(v,ctx){var t=ctx.dataset.data.reduce(function(a,b){return a+b},0);var p=t>0?((v/t)*100).toFixed(1):0;return v>0?"$"+v.toFixed(0)+"
-"+p+"%":""}}}}});
+    safeChart("chartGastosCat",{plugins:[ChartDataLabels],type:"doughnut",data:{labels:["Reparaciones","Mantenimiento","Llantas","Multas"],datasets:[{data:[tRep,tMant,tLlan,tMult],backgroundColor:["#c62828","#1565c0","#2e7d32","#ff6f00"],borderWidth:2,borderColor:"#fff"}]},options:{responsive:true,plugins:{legend:{position:"right"},datalabels:{color:"#fff",font:{weight:"bold",size:12},formatter:function(v,ctx){var t=ctx.dataset.data.reduce(function(a,b){return a+b},0);var p=t>0?((v/t)*100).toFixed(1):0;return v>0?"$"+v.toFixed(0)+" "+p+"%":""}}}}}});
   }
 
   // Add gasto modal
@@ -6530,8 +6529,7 @@ const _pageMap={renderDashboard:'dashboard',renderFlota:'flota',renderMant:'mant
 </script>
 </body>
 </html>
-+v.toFixed(0)+'
-'+p+'%':''}}}}});
++v.toFixed(0)+' '+p+'%':''}}}}}});
   }
 
   // Add gasto modal
