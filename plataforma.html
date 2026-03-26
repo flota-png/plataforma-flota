@@ -991,11 +991,11 @@ function renderGastos(){
     </div>
   </div>
 
-  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
-    <div class="kpi red"><div class="label">Reparaciones</div><div class="value">${fmt$(tRep)}</div><div class="sub">${reparaciones.length} registros</div></div>
-    <div class="kpi blue"><div class="label">Mantenimiento</div><div class="value">${fmt$(tMant)}</div><div class="sub">${costos.length} registros</div></div>
-    <div class="kpi green"><div class="label">Llantas</div><div class="value">${fmt$(tLlan)}</div><div class="sub">${llantas.length} cambios</div></div>
-    <div class="kpi orange"><div class="label">Multas</div><div class="value">${fmt$(tMult)}</div><div class="sub">${multas.length} infracciones</div></div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)" id="gastosKpis">
+    <div class="kpi red"><div class="label">Reparaciones</div><div class="value" id="gKpiRep">${fmt$(tRep)}</div><div class="sub" id="gKpiRepSub">${reparaciones.length} registros</div></div>
+    <div class="kpi blue"><div class="label">Mantenimiento</div><div class="value" id="gKpiMant">${fmt$(tMant)}</div><div class="sub" id="gKpiMantSub">${costos.length} registros</div></div>
+    <div class="kpi green"><div class="label">Llantas</div><div class="value" id="gKpiLlan">${fmt$(tLlan)}</div><div class="sub" id="gKpiLlanSub">${llantas.length} cambios</div></div>
+    <div class="kpi orange"><div class="label">Multas</div><div class="value" id="gKpiMult">${fmt$(tMult)}</div><div class="sub" id="gKpiMultSub">${multas.length} infracciones</div></div>
   </div>
 
   <!-- Table view -->
@@ -1091,7 +1091,23 @@ function renderGastos(){
   });
 
   document.getElementById('gSearch').addEventListener('input',renderGastosTable);
-  document.getElementById('gMonthFilter').addEventListener('change',renderGastosTable);
+  document.getElementById('gMonthFilter').addEventListener('change',function(){renderGastosTable();updateGastosKpis()});
+  function updateGastosKpis(){
+    const m=document.getElementById('gMonthFilter').value;
+    const fRep=m?reparaciones.filter(r=>r.fecha&&r.fecha.startsWith(m)):reparaciones;
+    const fMant=m?costos.filter(r=>r.fecha&&r.fecha.startsWith(m)):costos;
+    const fLlan=m?llantas.filter(r=>r.fecha&&r.fecha.startsWith(m)):llantas;
+    const fMult=m?multas.filter(r=>r.fecha&&r.fecha.startsWith(m)):multas;
+    const lbl=m?' ('+fmtMes(m)+')':'';
+    document.getElementById('gKpiRep').textContent=fmt$(sumField(fRep,'costo'));
+    document.getElementById('gKpiRepSub').textContent=fRep.length+' registros'+lbl;
+    document.getElementById('gKpiMant').textContent=fmt$(sumField(fMant,'costo'));
+    document.getElementById('gKpiMantSub').textContent=fMant.length+' registros'+lbl;
+    document.getElementById('gKpiLlan').textContent=fmt$(sumField(fLlan,'costo'));
+    document.getElementById('gKpiLlanSub').textContent=fLlan.length+' cambios'+lbl;
+    document.getElementById('gKpiMult').textContent=fmt$(sumField(fMult,'costo'));
+    document.getElementById('gKpiMultSub').textContent=fMult.length+' infracciones'+lbl;
+  }
 
   // View toggle
   document.getElementById('gViewTable').addEventListener('click',function(){
