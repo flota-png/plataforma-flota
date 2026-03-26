@@ -308,6 +308,7 @@ canvas{max-width:100%;max-height:350px}
 </div>
 </div>
 </div>
+</div>
 
 <!-- ========== COMBUSTIBLE ========== -->
 <div class="page" id="page-combustible">
@@ -2892,7 +2893,14 @@ document.querySelectorAll('.sidebar nav a').forEach(a=>{
 });
 
 // ===== INIT =====
-renderDashboard();renderFlota();renderMant();renderGastos();renderCombustible();renderReportes();renderReemplazo();renderGPS();
+const _pageMap={renderDashboard:'dashboard',renderFlota:'flota',renderMant:'mantenimiento',renderGastos:'gastos',renderCombustible:'combustible',renderReportes:'reportes',renderReemplazo:'reemplazo',renderGPS:'gps'};
+[renderDashboard,renderFlota,renderMant,renderGastos,renderCombustible,renderReportes,renderReemplazo,renderGPS].forEach(fn=>{
+  try{fn()}catch(e){
+    console.error('Error en '+fn.name+':',e);
+    const pg=document.getElementById('page-'+(_pageMap[fn.name]||''));
+    if(pg)pg.innerHTML='<div style="padding:40px;text-align:center;color:#c62828"><h3>Error en '+fn.name+'</h3><p style="font-family:monospace;font-size:.85rem;margin-top:12px;background:#fff;padding:16px;border-radius:8px;text-align:left;white-space:pre-wrap">'+e.message+'\n\n'+e.stack+'</p></div>';
+  }
+});
 </script>
 </body>
 </html>

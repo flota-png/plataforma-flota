@@ -1,0 +1,34 @@
+[INFO] Flota cargada: 51 vehiculos
+═══════════════════════════════════════════════════
+  SISTEMA DE ALERTAS DE VELOCIDAD - GRUPO RAPID
+═══════════════════════════════════════════════════
+  Limite: 100 km/h
+  Destinatarios:
+    - vlacayo@gruporapid.com
+    - operaciones@fumipestpanama.com
+    - lzambrano@gruporapid.com
+    - directoroperaciones@rapidfrio.com
+    - almacen2@gruporapid.com
+  Intervalo: cada 60 segundos
+  Cooldown: 10 min por vehiculo
+  Vehiculos en flota: 51
+═══════════════════════════════════════════════════
+  Iniciando monitoreo...
+
+[2:20:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 0 exceso velocidad
+[2:21:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 1 exceso velocidad
+  🚨 Volkswagen Saveiro - 105 km/h - Carlos Jordan (EL6794)
+[EMAIL] Alerta enviada a vlacayo@gruporapid.com, operaciones@fumipestpanama.com, lzambrano@gruporapid.com, directoroperaciones@rapidfrio.com, almacen2@gruporapid.com
+        Message ID: <93444dff-a727-b3cd-ef41-9c61bdb061a8@gruporapid.com>
+[SKIP] Volkswagen Saveiro a 114 km/h (cooldown activo)
+[2:22:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 0 exceso velocidad
+[SKIP] Volkswagen Saveiro a 116 km/h (cooldown activo)
+[2:23:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 0 exceso velocidad
+[SKIP] Volkswagen Saveiro a 111 km/h (cooldown activo)
+[2:24:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 0 exceso velocidad
+[SKIP] Volkswagen Saveiro a 112 km/h (cooldown activo)
+[2:25:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 0 exceso velocidad
+[SKIP] Volkswagen Saveiro a 107 km/h (cooldown activo)
+[2:26:47 p. m.] Unidades: 63 total | 56 online | 11 en movimiento | 0 exceso velocidad
+[2:27:47 p. m.] Unidades: 63 total | 56 online | 9 en movimiento | 0 exceso velocidad
+[2:28:47 p. m.] Unidades: 63 total | 56 online | 9 en movimiento | 0 exceso velocidad
