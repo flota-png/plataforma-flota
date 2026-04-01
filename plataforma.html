@@ -114,6 +114,12 @@ canvas{max-width:100%;max-height:350px}
 .fuel-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
 .fuel-card{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:16px;border-radius:10px;text-align:center}
 .fuel-card .fv{font-size:1.5rem;font-weight:700}.fuel-card .fl{font-size:.75rem;opacity:.8;margin-top:4px}
+#page-incidentes .summary-item{border-left:4px solid var(--border)}
+#page-incidentes .summary-item:nth-child(2){border-left-color:var(--warning)}
+#page-incidentes .summary-item:nth-child(3){border-left-color:var(--danger)}
+#page-incidentes .summary-item:nth-child(4){border-left-color:var(--success)}
+#page-incidentes .summary-item:nth-child(5){border-left-color:#1565c0}
+#page-incidentes .summary-item:nth-child(6){border-left-color:var(--primary)}
 </style>
 </head>
 <body>
@@ -131,6 +137,7 @@ canvas{max-width:100%;max-height:350px}
 <a href="#" data-page="mantenimiento"><span class="icon">&#128295;</span> Mantenimiento</a>
 <a href="#" data-page="reportes"><span class="icon">&#128196;</span> Reportes</a>
 <a href="#" data-page="gps"><span class="icon">&#128225;</span> GPS Tracking</a>
+<a href="#" data-page="incidentes"><span class="icon">&#128680;</span> Incidentes</a>
 <a href="#" data-page="reemplazo"><span class="icon">&#128260;</span> Reemplazo</a>
 <a href="#" data-page="importar"><span class="icon">&#128228;</span> Importar</a>
 </nav>
@@ -425,6 +432,59 @@ canvas{max-width:100%;max-height:350px}
 </div>
 </div>
 
+<!-- ========== INCIDENTES VEHICULARES ========== -->
+<div class="page" id="page-incidentes">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+  <div>
+    <h3 style="color:var(--primary);display:flex;align-items:center;gap:10px;font-size:1.2rem">&#128680; Incidentes Vehiculares</h3>
+    <p style="font-size:.85rem;color:var(--text-light);margin-top:4px" id="incidentesSubtitle">0 incidentes registrados</p>
+  </div>
+  <div class="filters" style="margin-bottom:0">
+    <input type="text" id="incBuscar" placeholder="Buscar placa, conductor...">
+    <select id="incTipo"><option value="">Todos los tipos</option><option value="Choque">Choque</option><option value="Volcadura">Volcadura</option><option value="Atropello">Atropello</option><option value="Colision lateral">Colision lateral</option><option value="Colision trasera">Colision trasera</option><option value="Daño a propiedad">Daño a propiedad</option><option value="Otro">Otro</option></select>
+    <select id="incStatus"><option value="">Todos los status</option><option value="En proceso">En proceso</option><option value="Culpable">Culpable</option><option value="No culpable">No culpable</option><option value="Cerrado">Cerrado</option></select>
+    <select id="incEmpresa"><option value="">Todas las empresas</option></select>
+  </div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+  <p style="font-size:.82rem;color:var(--text-light)" id="incFoundText">0 incidentes encontrados</p>
+  <button id="incAddBtn" style="padding:8px 16px;border:none;border-radius:8px;background:var(--danger);color:#fff;cursor:pointer;font-size:.82rem;font-weight:600">+ Registrar Incidente</button>
+</div>
+<div class="summary-grid" id="incKpiGrid"></div>
+<div class="card">
+<div class="table-wrap">
+<table><thead id="incThead"></thead><tbody id="incTbody"></tbody></table>
+</div>
+</div>
+<!-- Modal registrar/editar incidente -->
+<div id="incModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center">
+<div style="background:var(--card);border-radius:12px;padding:28px;width:600px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <h3 id="incModalTitle" style="color:var(--primary);font-size:1.1rem">Registrar Incidente</h3>
+    <button id="incModalClose" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-light)">&times;</button>
+  </div>
+  <div id="incModalBody" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"></div>
+  <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+    <button id="incModalCancel" style="padding:8px 20px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-size:.85rem">Cancelar</button>
+    <button id="incModalSave" style="padding:8px 20px;border:none;border-radius:8px;background:var(--primary);color:#fff;cursor:pointer;font-size:.85rem;font-weight:600">Guardar</button>
+  </div>
+</div>
+</div>
+<!-- Modal detalle incidente -->
+<div id="incDetailModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center">
+<div style="background:var(--card);border-radius:12px;width:650px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+  <div style="background:var(--danger);color:#fff;padding:20px 28px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h3 id="incDetailTitle" style="font-size:1.15rem;margin:0">Detalle del Incidente</h3>
+      <p id="incDetailSubtitle" style="font-size:.8rem;opacity:.8;margin:2px 0 0"></p>
+    </div>
+    <button id="incDetailClose" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#fff">&times;</button>
+  </div>
+  <div id="incDetailBody" style="padding:24px 28px"></div>
+</div>
+</div>
+</div>
+
 <!-- ========== REEMPLAZO ========== -->
 <div class="page" id="page-reemplazo">
 <div id="reemplazoContent"></div>
@@ -487,6 +547,13 @@ let multas = [{"id": "27", "vehiculo": "Toyota Yaris", "placa": "CK4381", "depto
 var FB_URL="https://plataforma-flota-default-rtdb.firebaseio.com";
 function fbSave(key,data){fetch(FB_URL+"/"+key+".json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)}).then(function(r){if(!r.ok)console.log("FB save error",r.status);else console.log("FB saved",key,data.length,"items")}).catch(function(e){console.log("FB save error",e)})}
 function fbLoad(key){return fetch(FB_URL+"/"+key+".json").then(function(r){return r.json()}).catch(function(){return null})}
+let incidentes = [];
+function saveIncidentesLocal(){
+  try{localStorage.setItem("incidentesData",JSON.stringify(incidentes))}catch(e){}
+  fbSave("incidentes",incidentes);
+}
+(function(){try{var s=localStorage.getItem("incidentesData");if(s)incidentes=JSON.parse(s)}catch(e){}})();
+
 function saveGastosLocal(){
   try{localStorage.setItem("reparacionesData",JSON.stringify(reparaciones))}catch(e){}
   try{localStorage.setItem("costosData",JSON.stringify(costos))}catch(e){}
@@ -498,7 +565,7 @@ function saveFlotaFB(){fbSave("flota",flota)}
 function saveCombustibleFB(){fbSave("combustible",combustible)}
 (function(){try{var s=localStorage.getItem("reparacionesData");if(s)reparaciones=JSON.parse(s)}catch(e){}try{s=localStorage.getItem("costosData");if(s)costos=JSON.parse(s)}catch(e){}try{s=localStorage.getItem("llantasData");if(s)llantas=JSON.parse(s)}catch(e){}try{s=localStorage.getItem("multasData");if(s)multas=JSON.parse(s)}catch(e){}})();
 (function loadFromFirebase(){
-  Promise.all([fbLoad("reparaciones"),fbLoad("costos"),fbLoad("llantas"),fbLoad("multas"),fbLoad("flota"),fbLoad("combustible")]).then(function(res){
+  Promise.all([fbLoad("reparaciones"),fbLoad("costos"),fbLoad("llantas"),fbLoad("multas"),fbLoad("flota"),fbLoad("combustible"),fbLoad("incidentes")]).then(function(res){
     var changed=false;
     if(res[0]&&res[0].length){reparaciones=res[0];changed=true}
     if(res[1]&&res[1].length){costos=res[1];changed=true}
@@ -506,6 +573,7 @@ function saveCombustibleFB(){fbSave("combustible",combustible)}
     if(res[3]&&res[3].length){multas=res[3];changed=true}
     if(res[4]&&res[4].length){flota=res[4];try{localStorage.setItem("flotaData",JSON.stringify(flota))}catch(e){}}
     if(res[5]&&res[5].length){combustible=res[5];try{localStorage.setItem("combustibleData",JSON.stringify(combustible))}catch(e){}}
+    if(res[6]&&res[6].length){incidentes=res[6];try{localStorage.setItem("incidentesData",JSON.stringify(incidentes))}catch(e){}}
     if(changed){
       try{localStorage.setItem("reparacionesData",JSON.stringify(reparaciones))}catch(e){}
       try{localStorage.setItem("costosData",JSON.stringify(costos))}catch(e){}
@@ -521,7 +589,7 @@ let combustible = [{"fecha":"2025-09-01","hora":"06:17:1","placa":"88121139","de
 // ===== NAV =====
 const pages = document.querySelectorAll('.page');
 const navLinks = document.querySelectorAll('.sidebar nav a');
-const titles = {dashboard:'Dashboard',flota:'Flota General',mantenimiento:'Mantenimientos',gastos:'Control de Gastos',combustible:'Combustible',reportes:'Reportes y Analisis',gps:'GPS Tracking',reemplazo:'Reemplazo',importar:'Importar Datos'};
+const titles = {dashboard:'Dashboard',flota:'Flota General',mantenimiento:'Mantenimientos',gastos:'Control de Gastos',combustible:'Combustible',reportes:'Reportes y Analisis',gps:'GPS Tracking',incidentes:'Incidentes Vehiculares',reemplazo:'Reemplazo',importar:'Importar Datos'};
 navLinks.forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const p=a.dataset.page;const target=document.getElementById('page-'+p);if(!target)return;pages.forEach(pg=>pg.classList.remove('active'));target.classList.add('active');navLinks.forEach(l=>l.classList.remove('active'));a.classList.add('active');document.getElementById('pageTitle').textContent=titles[p]||p;document.getElementById('sidebar').classList.remove('open')})});
 
 // Clock
@@ -2943,9 +3011,192 @@ document.querySelectorAll('.sidebar nav a').forEach(a=>{
   });
 });
 
+// ===== INCIDENTES VEHICULARES =====
+function renderIncidentes(){
+  const empresas=[...new Set(flota.map(v=>v.empresa))].sort();
+  const selEmp=document.getElementById('incEmpresa');
+  if(selEmp.options.length<=1) empresas.forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;selEmp.appendChild(o)});
+
+  function getFiltered(){
+    let arr=incidentes.slice();
+    const q=(document.getElementById('incBuscar').value||'').toLowerCase();
+    const tipo=document.getElementById('incTipo').value;
+    const status=document.getElementById('incStatus').value;
+    const emp=document.getElementById('incEmpresa').value;
+    if(q) arr=arr.filter(i=>(i.placa||'').toLowerCase().includes(q)||(i.conductor||'').toLowerCase().includes(q)||(i.descripcion||'').toLowerCase().includes(q));
+    if(tipo) arr=arr.filter(i=>i.tipo===tipo);
+    if(status) arr=arr.filter(i=>i.status===status);
+    if(emp) arr=arr.filter(i=>i.empresa===emp);
+    arr.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+    return arr;
+  }
+
+  function incStatusBadge(s){
+    if(s==='Culpable') return '<span class="badge" style="background:#ffebee;color:#c62828">Culpable</span>';
+    if(s==='No culpable') return '<span class="badge" style="background:#e8f5e9;color:#2e7d32">No culpable</span>';
+    if(s==='En proceso') return '<span class="badge" style="background:#fff8e1;color:#f57f17">En proceso</span>';
+    if(s==='Cerrado') return '<span class="badge" style="background:#e3f2fd;color:#1565c0">Cerrado</span>';
+    return '<span class="badge" style="background:#f5f5f5;color:#757575">'+(s||'--')+'</span>';
+  }
+
+  function render(){
+    const filtered=getFiltered();
+    document.getElementById('incidentesSubtitle').textContent=incidentes.length+' incidentes registrados';
+    document.getElementById('incFoundText').textContent=filtered.length+' incidentes encontrados';
+
+    // KPIs
+    const total=incidentes.length;
+    const enProceso=incidentes.filter(i=>i.status==='En proceso').length;
+    const culpables=incidentes.filter(i=>i.status==='Culpable').length;
+    const noCulpables=incidentes.filter(i=>i.status==='No culpable').length;
+    const cerrados=incidentes.filter(i=>i.status==='Cerrado').length;
+    const costoTotal=incidentes.reduce((s,i)=>s+(parseFloat(i.costoEstimado)||0),0);
+    document.getElementById('incKpiGrid').innerHTML=
+      '<div class="summary-item"><div class="num">'+total+'</div><div class="txt">Total Incidentes</div></div>'+
+      '<div class="summary-item"><div class="num" style="color:#f57f17">'+enProceso+'</div><div class="txt">En Proceso</div></div>'+
+      '<div class="summary-item"><div class="num" style="color:#c62828">'+culpables+'</div><div class="txt">Culpables</div></div>'+
+      '<div class="summary-item"><div class="num" style="color:#2e7d32">'+noCulpables+'</div><div class="txt">No Culpables</div></div>'+
+      '<div class="summary-item"><div class="num" style="color:#1565c0">'+cerrados+'</div><div class="txt">Cerrados</div></div>'+
+      '<div class="summary-item"><div class="num" style="color:var(--primary)">$'+fmtN(costoTotal)+'</div><div class="txt">Costo Estimado Total</div></div>';
+
+    // Table
+    document.getElementById('incThead').innerHTML='<tr><th>#</th><th>Fecha</th><th>Placa</th><th>Conductor</th><th>Empresa</th><th>Tipo</th><th>Descripcion</th><th>Status</th><th>Costo Est.</th><th>Acciones</th></tr>';
+    document.getElementById('incTbody').innerHTML=filtered.map((inc,i)=>
+      '<tr style="cursor:pointer" onclick="showIncDetail('+incidentes.indexOf(inc)+')">'+
+      '<td>'+(i+1)+'</td>'+
+      '<td>'+(inc.fecha||'--')+'</td>'+
+      '<td><strong>'+(inc.placa||'--')+'</strong></td>'+
+      '<td>'+(inc.conductor||'--')+'</td>'+
+      '<td>'+(inc.empresa||'--')+'</td>'+
+      '<td>'+(inc.tipo||'--')+'</td>'+
+      '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(inc.descripcion||'--')+'</td>'+
+      '<td>'+incStatusBadge(inc.status)+'</td>'+
+      '<td>$'+fmtN(parseFloat(inc.costoEstimado)||0)+'</td>'+
+      '<td><button onclick="event.stopPropagation();editIncidente('+incidentes.indexOf(inc)+')" style="padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;font-size:.75rem;margin-right:4px">Editar</button><button onclick="event.stopPropagation();deleteIncidente('+incidentes.indexOf(inc)+')" style="padding:4px 10px;border:1px solid #ffcdd2;border-radius:6px;background:#fff5f5;color:#c62828;cursor:pointer;font-size:.75rem">Eliminar</button></td>'+
+      '</tr>'
+    ).join('');
+  }
+
+  render();
+
+  ['incBuscar','incTipo','incStatus','incEmpresa'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.removeEventListener('input',render);el.removeEventListener('change',render);
+    el.addEventListener(id==='incBuscar'?'input':'change',render);
+  });
+
+  // Modal fields
+  const fields=[
+    {key:'fecha',label:'Fecha',type:'date'},
+    {key:'placa',label:'Placa',type:'select',options:[''].concat([...new Set(flota.map(v=>v.placa))].sort())},
+    {key:'conductor',label:'Conductor',type:'text'},
+    {key:'empresa',label:'Empresa',type:'select',options:[''].concat(empresas)},
+    {key:'tipo',label:'Tipo de Incidente',type:'select',options:['','Choque','Volcadura','Atropello','Colision lateral','Colision trasera','Daño a propiedad','Otro']},
+    {key:'status',label:'Status',type:'select',options:['','En proceso','Culpable','No culpable','Cerrado']},
+    {key:'ubicacion',label:'Ubicacion',type:'text'},
+    {key:'costoEstimado',label:'Costo Estimado ($)',type:'number'},
+    {key:'aseguradora',label:'Aseguradora / Poliza',type:'text'},
+    {key:'numReclamo',label:'No. Reclamo',type:'text'},
+    {key:'descripcion',label:'Descripcion',type:'textarea'},
+    {key:'notas',label:'Notas / Seguimiento',type:'textarea'}
+  ];
+
+  function buildModalForm(data){
+    const body=document.getElementById('incModalBody');
+    body.innerHTML=fields.map(f=>{
+      const val=data[f.key]||'';
+      const span=f.type==='textarea'?'style="grid-column:1/-1"':'';
+      if(f.type==='select'){
+        return '<div '+span+'><label style="font-size:.72rem;color:var(--text-light);display:block;margin-bottom:4px">'+f.label+'</label><select id="incF_'+f.key+'" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;background:#fff">'+f.options.map(o=>'<option value="'+o+'"'+(o===val?' selected':'')+'>'+( o||'Seleccionar...')+'</option>').join('')+'</select></div>';
+      }
+      if(f.type==='textarea'){
+        return '<div '+span+'><label style="font-size:.72rem;color:var(--text-light);display:block;margin-bottom:4px">'+f.label+'</label><textarea id="incF_'+f.key+'" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;min-height:60px;resize:vertical;font-family:inherit;box-sizing:border-box">'+val+'</textarea></div>';
+      }
+      return '<div '+span+'><label style="font-size:.72rem;color:var(--text-light);display:block;margin-bottom:4px">'+f.label+'</label><input type="'+(f.type||'text')+'" id="incF_'+f.key+'" value="'+val+'" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;box-sizing:border-box"></div>';
+    }).join('');
+    // Auto-fill conductor/empresa when placa changes
+    const placaSel=document.getElementById('incF_placa');
+    if(placaSel) placaSel.addEventListener('change',function(){
+      const v=flota.find(f=>f.placa===this.value);
+      if(v){
+        document.getElementById('incF_conductor').value=v.conductor||'';
+        document.getElementById('incF_empresa').value=v.empresa||'';
+      }
+    });
+  }
+
+  function readForm(){
+    const obj={};
+    fields.forEach(f=>{
+      const el=document.getElementById('incF_'+f.key);
+      obj[f.key]=el?el.value.trim():'';
+    });
+    return obj;
+  }
+
+  let editIdx=-1;
+  document.getElementById('incAddBtn').onclick=function(){
+    editIdx=-1;
+    document.getElementById('incModalTitle').textContent='Registrar Incidente';
+    buildModalForm({fecha:new Date().toISOString().slice(0,10)});
+    document.getElementById('incModal').style.display='flex';
+  };
+  document.getElementById('incModalClose').onclick=document.getElementById('incModalCancel').onclick=function(){document.getElementById('incModal').style.display='none'};
+  document.getElementById('incModalSave').onclick=function(){
+    const data=readForm();
+    if(!data.fecha||!data.placa||!data.tipo){alert('Fecha, Placa y Tipo son obligatorios');return}
+    if(editIdx>=0){
+      incidentes[editIdx]=Object.assign(incidentes[editIdx],data);
+    } else {
+      data.id='INC-'+Date.now();
+      data.fechaRegistro=new Date().toISOString();
+      incidentes.push(data);
+    }
+    saveIncidentesLocal();
+    document.getElementById('incModal').style.display='none';
+    render();
+  };
+
+  window.editIncidente=function(idx){
+    editIdx=idx;
+    document.getElementById('incModalTitle').textContent='Editar Incidente';
+    buildModalForm(incidentes[idx]);
+    document.getElementById('incModal').style.display='flex';
+  };
+
+  window.deleteIncidente=function(idx){
+    if(!confirm('¿Eliminar este incidente?')) return;
+    incidentes.splice(idx,1);
+    saveIncidentesLocal();
+    render();
+  };
+
+  window.showIncDetail=function(idx){
+    const inc=incidentes[idx];
+    if(!inc) return;
+    document.getElementById('incDetailTitle').textContent=(inc.tipo||'Incidente')+' — '+(inc.placa||'');
+    document.getElementById('incDetailSubtitle').textContent=(inc.fecha||'')+' | '+(inc.conductor||'');
+    const body=document.getElementById('incDetailBody');
+    body.innerHTML=
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">'+
+      [['Fecha',inc.fecha],['Placa',inc.placa],['Conductor',inc.conductor],['Empresa',inc.empresa],
+       ['Tipo',inc.tipo],['Status',inc.status],['Ubicacion',inc.ubicacion],['Costo Estimado','$'+(parseFloat(inc.costoEstimado)||0).toFixed(2)],
+       ['Aseguradora',inc.aseguradora],['No. Reclamo',inc.numReclamo]].map(function(p){
+        return '<div class="stat-row" style="border:none;padding:6px 0"><span class="lbl">'+p[0]+'</span><span class="val">'+(p[1]||'--')+'</span></div>';
+      }).join('')+
+      '</div>'+
+      (inc.status?'<div style="margin-bottom:16px">'+incStatusBadge(inc.status)+'</div>':'')+
+      '<div style="margin-bottom:16px"><strong style="font-size:.82rem;color:var(--text-light)">DESCRIPCION</strong><p style="font-size:.88rem;margin-top:6px;background:#f8f9fa;padding:12px;border-radius:8px">'+(inc.descripcion||'Sin descripcion')+'</p></div>'+
+      '<div><strong style="font-size:.82rem;color:var(--text-light)">NOTAS / SEGUIMIENTO</strong><p style="font-size:.88rem;margin-top:6px;background:#f8f9fa;padding:12px;border-radius:8px">'+(inc.notas||'Sin notas')+'</p></div>'+
+      '<div style="display:flex;gap:10px;margin-top:20px"><button onclick="editIncidente('+idx+');document.getElementById(\'incDetailModal\').style.display=\'none\'" style="padding:8px 20px;border:none;border-radius:8px;background:var(--primary);color:#fff;cursor:pointer;font-size:.85rem;font-weight:600">Editar</button></div>';
+    document.getElementById('incDetailModal').style.display='flex';
+  };
+  document.getElementById('incDetailClose').onclick=function(){document.getElementById('incDetailModal').style.display='none'};
+}
+
 // ===== INIT =====
-const _pageMap={renderDashboard:'dashboard',renderFlota:'flota',renderMant:'mantenimiento',renderGastos:'gastos',renderCombustible:'combustible',renderReportes:'reportes',renderReemplazo:'reemplazo',renderGPS:'gps'};
-[renderDashboard,renderFlota,renderMant,renderGastos,renderCombustible,renderReportes,renderReemplazo,renderGPS].forEach(fn=>{
+const _pageMap={renderDashboard:'dashboard',renderFlota:'flota',renderMant:'mantenimiento',renderGastos:'gastos',renderCombustible:'combustible',renderReportes:'reportes',renderReemplazo:'reemplazo',renderIncidentes:'incidentes',renderGPS:'gps'};
+[renderDashboard,renderFlota,renderMant,renderGastos,renderCombustible,renderReportes,renderReemplazo,renderIncidentes,renderGPS].forEach(fn=>{
   try{fn()}catch(e){
     console.error('Error en '+fn.name+':',e);
     const pg=document.getElementById('page-'+(_pageMap[fn.name]||''));
