@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tarjeta — Mariscos Pacific Mar</title>
+<style>
+  :root{
+    --navy-1:#0b2148;
+    --navy-2:#0a1a3a;
+    --navy-3:#050f26;
+    --gold:#d4a84a;
+    --gold-soft:#e9c877;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#2b2b2b;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:30px 20px}
+
+  .toolbar{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .btn{
+    background:var(--gold);color:#1a1a1a;border:0;padding:14px 28px;border-radius:10px;
+    font-weight:700;letter-spacing:.5px;cursor:pointer;font-size:16px;
+    box-shadow:0 6px 18px rgba(0,0,0,.4);transition:transform .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .hint{color:#bbb;font-size:12px}
+
+  /* Tarjeta 3.5" x 2" a 300 dpi => 1050 x 600 px */
+  .card{
+    width:1050px;height:600px;border-radius:22px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(120% 80% at 20% 10%, #12305f 0%, var(--navy-1) 35%, var(--navy-2) 65%, var(--navy-3) 100%);
+    box-shadow:0 25px 60px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.04);
+    color:#fff;
+    display:grid;grid-template-columns:440px 1fr;align-items:center;padding:40px 50px;
+  }
+  .card::before{
+    content:"";position:absolute;inset:16px;border-radius:14px;
+    border:1.5px solid rgba(212,168,74,.55);pointer-events:none;
+  }
+  .card::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(60% 40% at 80% 110%, rgba(212,168,74,.10), transparent 60%);
+  }
+
+  .logo-wrap{
+    width:360px;height:360px;margin-left:10px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .logo-wrap img{
+    width:100%;height:100%;object-fit:cover;border-radius:50%;
+    clip-path:circle(49.5% at 50% 50%);
+    filter:drop-shadow(0 10px 25px rgba(0,0,0,.55));
+  }
+  .logo-wrap::after{
+    content:"";position:absolute;inset:-6px;border-radius:50%;
+    border:2px solid rgba(212,168,74,.6);
+    box-shadow:0 0 0 8px rgba(212,168,74,.08);
+  }
+
+  .info{padding-left:30px;position:relative;z-index:2}
+  .divider{
+    width:3px;height:280px;background:linear-gradient(180deg,transparent,var(--gold),transparent);
+    position:absolute;left:0;top:50%;transform:translateY(-50%);border-radius:3px;
+  }
+  .brand{
+    font-family:'Georgia','Times New Roman',serif;
+    color:var(--gold-soft);font-size:34px;letter-spacing:3px;font-weight:700;
+    text-transform:uppercase;margin-bottom:6px;
+  }
+  .brand span{color:#fff;display:block;font-size:20px;letter-spacing:6px;font-weight:400;margin-top:2px}
+  .tagline{font-style:italic;color:#cdd7ea;font-size:15px;margin-top:10px;margin-bottom:28px;letter-spacing:.5px}
+  .name{font-size:40px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:4px;line-height:1.1}
+  .role{font-size:14px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:26px}
+
+  .contact .row{display:flex;align-items:center;gap:14px;font-size:22px;color:#eef2fb}
+  .contact .ico{
+    width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:rgba(212,168,74,.15);border:1px solid rgba(212,168,74,.5);color:var(--gold);
+    font-size:20px;flex:none;
+  }
+  .contact b{font-weight:700;letter-spacing:1.5px}
+
+  .corner{position:absolute;width:64px;height:64px;border:1.5px solid var(--gold);opacity:.7}
+  .corner.tl{top:28px;left:28px;border-right:0;border-bottom:0;border-top-left-radius:10px}
+  .corner.tr{top:28px;right:28px;border-left:0;border-bottom:0;border-top-right-radius:10px}
+  .corner.bl{bottom:28px;left:28px;border-right:0;border-top:0;border-bottom-left-radius:10px}
+  .corner.br{bottom:28px;right:28px;border-left:0;border-top:0;border-bottom-right-radius:10px}
+
+  @media (max-width:1120px){
+    .card{transform:scale(.7);transform-origin:top center;margin-bottom:-180px}
+  }
+</style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <button class="btn" id="btnDownload">⬇ DESCARGAR TARJETA (PNG)</button>
+    <span class="hint">Tamaño: 3.5" x 2" a 600 dpi — listo para imprenta</span>
+  </div>
+
+  <div id="tarjeta" class="card">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+
+    <div class="logo-wrap">
+      <img id="logoImg" src="logo.png" alt="Mariscos Pacific Mar" crossorigin="anonymous">
+    </div>
+
+    <div class="info">
+      <span class="divider"></span>
+      <div class="brand">Mariscos<span>Pacific Mar</span></div>
+      <div class="tagline">Frescura del mar directo a tu mesa</div>
+
+      <div class="name">Luis Saavedra</div>
+      <div class="role">Representante de Ventas</div>
+
+      <div class="contact">
+        <div class="row">
+          <span class="ico">&#9742;</span>
+          <b>6532-9947</b>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const btn = document.getElementById('btnDownload');
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = 'Generando imagen...';
+    try {
+      const el = document.getElementById('tarjeta');
+      const prevTransform = el.style.transform;
+      el.style.transform = 'none';
+
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false
+      });
+
+      el.style.transform = prevTransform;
+
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Tarjeta-Mariscos-Pacific-Mar.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, 'image/png');
+
+      btn.textContent = '✓ ¡Descargada! Descargar otra vez';
+      setTimeout(()=>{ btn.textContent='⬇ DESCARGAR TARJETA (PNG)'; btn.disabled=false; }, 2500);
+    } catch(e) {
+      alert('Error: ' + e.message + '\n\nSi estás abriendo el archivo directamente, intenta: clic derecho sobre la tarjeta > Guardar como imagen.');
+      btn.textContent = '⬇ DESCARGAR TARJETA (PNG)';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
