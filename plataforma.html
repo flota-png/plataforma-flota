@@ -1007,7 +1007,27 @@ function saveFlotaLocal(){
 }
 
 // ===== MANTENIMIENTO =====
+function syncMantenimientosFromCostos(){
+  function parseDate(s){if(!s)return null;var p=String(s).split('-');if(p.length!==3)return null;var d=new Date(+p[0],+p[1]-1,+p[2]);return isNaN(d.getTime())?null:d;}
+  function toIso(d){var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+dd;}
+  var today=new Date();today.setHours(0,0,0,0);
+  mantenimientos.forEach(function(m){
+    if(!m.placa)return;
+    var ms=costos.filter(function(c){return c.placa===m.placa&&(c.trabajo||'').toLowerCase().indexOf('mantenimiento')>=0&&c.fecha;});
+    if(!ms.length)return;
+    ms.sort(function(a,b){return (b.fecha||'').localeCompare(a.fecha||'');});
+    var last=parseDate(ms[0].fecha);
+    if(!last)return;
+    var prox=new Date(last.getFullYear(),last.getMonth()+3,last.getDate());
+    m.mant=toIso(last);
+    m.proximo=toIso(prox);
+    var days=Math.floor((prox-today)/86400000);
+    m.status=days<0?'Se debe realizar':days<30?'Próximo':'Al día';
+  });
+}
+
 function renderMant(){
+  syncMantenimientosFromCostos();
   const headers=['#','Empresa','Tipo','Vehiculo','Modelo','Placa','Status','Ultimo Mant.','Proximo Mant.'];
   document.getElementById('mantThead').innerHTML='<tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr>';
   const stats=[...new Set(mantenimientos.map(m=>m.status).filter(Boolean))].sort();
@@ -1351,6 +1371,7 @@ function renderGastos(){
       saveGastosLocal();
       modal.style.display='none';
       renderGastos();
+      if(typeof renderMant==='function') renderMant();
     };
   }
 
@@ -1366,7 +1387,7 @@ function renderGastos(){
     if(!confirm('¿Eliminar este registro?'))return;
     let arr=cat==='Reparación'?reparaciones:cat==='Mantenimiento'?costos:cat==='Llantas'?llantas:multas;
     const idx=arr.findIndex(g=>g.placa===placa&&g.fecha===fecha&&(parseFloat(g.costo)||0)===parseFloat(costo));
-    if(idx>-1){arr.splice(idx,1);saveGastosLocal();renderGastos()}
+    if(idx>-1){arr.splice(idx,1);saveGastosLocal();renderGastos();if(typeof renderMant==='function')renderMant();}
   };
 
   renderGastosTable();
